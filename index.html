@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./assets/images/favicon-32x32.png" />
+
+    <title>Frontend Mentor | Conference ticket generator</title>
+
+    <link rel="stylesheet" href="./styles/index.css" />
+
+    <script type="module" src="app.js"></script>
+  </head>
+  <body>
+    <main>
+      <img
+        class="logo-full"
+        src="./assets/images/logo-full.svg"
+        alt="Coding Conf Logo" />
+
+      <div id="fill-ticket-container" class="main-content-container">
+        <h1 class="introdury-heading">
+          Your Journey to Coding Conf 2027 Starts Here!
+        </h1>
+
+        <p class="introdury-subheading">
+          Secure your spot at next year's biggest coding conference.
+        </p>
+        <!-- Form starts -->
+        <form class="form">
+          <div class="form-field">
+            <label for="file-upload"> Upload Avatar </label>
+
+            <div class="file-upload-wrapper">
+              <!-- Hidden native input -->
+              <input
+                id="file-upload"
+                aria-describedby="avatar-hint"
+                aria-invalid="false"
+                aria-errormessage="avatar-error"
+                type="file"
+                accept="image/jpeg, image/png"
+                class="hidden-avatar-input"
+                data-bind="avatar"
+                required />
+
+              <label for="file-upload" class="file-upload-label">
+                <img
+                  src="./assets/images/icon-upload.svg"
+                  alt=""
+                  id="avatar-preview"
+                  class="file-upload-icon" />
+
+                <span id="file-state-empty" class="file-upload-prompt">
+                  Drag and drop or click to upload
+                </span>
+
+                <div
+                  id="file-state-filled"
+                  class="file-attached-actions-wrapper"
+                  hidden>
+                  <button type="button" id="btn-remove-image" class="btn-ghost">
+                    Remove image
+                  </button>
+
+                  <button type="button" id="btn-change-image" class="btn-ghost">
+                    Change image
+                  </button>
+                </div>
+              </label>
+            </div>
+
+            <span id="avatar-hint" class="upload-avatar-caption">
+              <img src="./assets/images/icon-info.svg" alt="" />
+              Upload your photo (JPG or PNG, max size: 500KB).
+            </span>
+
+            <span id="avatar-error" class="error-caption-wrapper" hidden>
+              <span class="error-caption-icon" aria-hidden="true"></span>
+              <span class="error-caption-text">
+                File too large. Please upload a photo under 500KB.
+              </span>
+            </span>
+          </div>
+
+          <div class="form-field">
+            <label for="full-name"> Full Name </label>
+
+            <input
+              id="full-name"
+              type="text"
+              data-bind="fullName"
+              aria-invalid="false"
+              aria-errormessage="full-name-error"
+              required />
+
+            <span id="full-name-error" class="error-caption-wrapper" hidden>
+              <span class="error-caption-icon" aria-hidden="true"></span>
+              <span class="error-caption-text">
+                This field can not be empty.
+              </span>
+            </span>
+          </div>
+
+          <div class="form-field">
+            <label for="email-address"> Email Address </label>
+
+            <input
+              id="email-address"
+              type="email"
+              placeholder="example@email.com"
+              data-bind="email"
+              aria-invalid="false"
+              aria-errormessage="email-error"
+              required />
+
+            <span id="email-error" class="error-caption-wrapper" hidden>
+              <span class="error-caption-icon" aria-hidden="true"></span>
+              <span class="error-caption-text">
+                Please enter a valid email address.
+              </span>
+            </span>
+          </div>
+
+          <div class="form-field">
+            <label for="github-username"> GitHub Username </label>
+
+            <input
+              id="github-username"
+              type="text"
+              placeholder="@yourusername"
+              data-bind="githubUsername"
+              aria-invalid="false"
+              aria-errormessage="github-username-error"
+              required />
+
+            <span
+              id="github-username-error"
+              class="error-caption-wrapper"
+              hidden>
+              <span class="error-caption-icon" aria-hidden="true"></span>
+              <span class="error-caption-text">
+                This field can not be empty.
+              </span>
+            </span>
+          </div>
+
+          <button id="btn-generate" type="submit" class="btn-primary">
+            Generate My Ticket
+          </button>
+        </form>
+        <!-- Form ends -->
+      </div>
+
+      <div
+        id="generated-ticket-container"
+        class="main-content-container"
+        hidden>
+        <h1 class="introdury-heading">
+          Congrats,
+          <span
+            id="name-identifier"
+            class="gradient-text-01"
+            data-id="result-fullname-heading"
+            >Jonatan Kristof!</span
+          >
+          Your ticket is ready.
+        </h1>
+
+        <p class="introdury-subheading">
+          We've emailed your ticket to
+          <span
+            id="email-identifier"
+            class="email-identifier"
+            data-id="result-email"
+            >jonatan@email.com</span
+          >
+          and will send updates in the run up to the event.
+        </p>
+
+        <div class="ticket-container">
+          <div class="ticket-left">
+            <div>
+              <img
+                class="ticket-header-logo"
+                src="./assets/images/logo-full.svg"
+                alt="" />
+              <p class="ticket-header-text" data-id="result-date-location">
+                Jan 31, 2027 / Austin, TX
+              </p>
+            </div>
+
+            <div class="ticket-body-container">
+              <img
+                class="ticket-body-avatar"
+                src="./assets/images/image-avatar.jpg"
+                alt="Avatar"
+                data-id="result-avatar" />
+              <div class="ticket-user-identifier-wrapper">
+                <p class="ticket-user-fullname" data-id="result-fullname">
+                  Jonatan Kristof
+                </p>
+                <div class="ticket-user-github-wrapper">
+                  <img
+                    class="github-icon"
+                    src="./assets/images/icon-github.svg"
+                    alt="Github Icon" />
+                  <span
+                    class="ticket-user-github-username"
+                    data-id="result-github-username">
+                    @jonatankristof0101
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ticket-right">
+            <span class="ticket-number">#01609</span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Generated tickets starts -->
+
+    <!-- Congrats, Full Name! Your ticket is ready. -->
+
+    <!-- We've emailed your ticket to Email Address and will send updates in the run up to the event. -->
+
+    <!-- Coding Conf -->
+    <!-- Jan 31, 2025 / Austin, TX -->
+
+    <!-- Generated tickets ends -->
+
+    <footer class="footer-cotainer">
+      Challenge by
+      <a href="https://www.frontendmentor.io?ref=challenge">Frontend Mentor</a>.
+      Coded by <a href="#">Your Name Here</a>.
+    </footer>
+  </body>
+</html>
