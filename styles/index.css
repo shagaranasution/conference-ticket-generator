@@ -210,13 +210,10 @@ input[aria-invalid='true']:focus {
   display: none !important;
 }
 
-.logo-full-link {
-  align-self: center;
-  margin-bottom: var(--space-6xl);
-}
 .logo-full {
   width: var(--logo-sm);
   align-self: center;
+  margin-bottom: var(--space-6xl);
 }
 
 .introdury-heading {
@@ -597,11 +594,9 @@ input[aria-invalid='true']:focus {
     padding: var(--space-6xl) var(--space-0);
   }
 
-  .logo-full-link {
-    margin-bottom: var(--space-8xl);
-  }
   .logo-full {
     width: var(--logo-md);
+    margin-bottom: var(--space-8xl);
   }
 
   .ticket-container {
