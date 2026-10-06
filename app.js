@@ -4,6 +4,7 @@ const emailInputEl = document.querySelector('#email-address');
 const githubUsernameInputEl = document.querySelector('#github-username');
 
 const avatarPreviewEl = document.querySelector('#avatar-preview');
+const avatarUploadWrapperEl = document.querySelector('#file-upload-wrapper');
 const fileStateEmptyEl = document.querySelector('#file-state-empty');
 const fileStateFilledEl = document.querySelector('#file-state-filled');
 
@@ -13,7 +14,8 @@ const removeImageButton = document.querySelector('#btn-remove-image');
 const avatarPreviewPlaceholderImageUrl = avatarPreviewEl.src;
 
 const avatarHintEl = document.querySelector('#avatar-hint');
-const avatarErrorEl = document.querySelector('#avatar-error');
+const avatarErrorEmptyEl = document.querySelector('#avatar-error-empty');
+const avatarErrorMaxSizeEl = document.querySelector('#avatar-error-max-size');
 const fullNameErrorEl = document.querySelector('#full-name-error');
 const emailErrorEl = document.querySelector('#email-error');
 const githubUsernameErrorEl = document.querySelector('#github-username-error');
@@ -41,7 +43,7 @@ const resultGithubUsernameEl = document.querySelector(
 );
 
 const formData = {
-  avatar: '',
+  avatar: null,
   fullName: '',
   email: '',
   githubUsername: '',
@@ -59,8 +61,6 @@ const appState = new Proxy(formData, {
         element.getAttribute('type') !== 'file'
       ) {
         element.value = value;
-      } else {
-        element.textContent = value;
       }
     }
 
@@ -69,8 +69,12 @@ const appState = new Proxy(formData, {
 });
 
 function showFileEmptyState() {
+  avatarInputEl.setAttribute('aria-invalid', 'false');
   fileStateEmptyEl.removeAttribute('hidden');
   fileStateFilledEl.setAttribute('hidden', '');
+  avatarHintEl.removeAttribute('hidden');
+  avatarErrorEmptyEl.setAttribute('hidden', '');
+  avatarErrorMaxSizeEl.setAttribute('hidden', '');
 }
 
 function showFileFilledState() {
@@ -105,8 +109,9 @@ function handleChangeImageButtonClick() {
 function handleRemoveImageButtonClick() {
   avatarPreviewEl.src = avatarPreviewPlaceholderImageUrl;
   showFileEmptyState();
-  URL.revokeObjectURL(appState.avatar);
-  appState.avatar = '';
+  URL.revokeObjectURL(appState.avatar?.objectURL);
+  appState.avatar = null;
+  avatarInputEl.value = null;
 }
 
 function isValidEmail(value) {
@@ -137,20 +142,44 @@ function isValidEmail(value) {
   return true;
 }
 
+function showAvatarErrorEmptyState() {
+  avatarInputEl.setAttribute('aria-invalid', 'true');
+  avatarHintEl.setAttribute('hidden', '');
+  avatarErrorEmptyEl.removeAttribute('hidden');
+}
+
+function removeAvatarErrorEmptyState() {
+  avatarInputEl.setAttribute('aria-invalid', 'false');
+  avatarErrorEmptyEl.setAttribute('hidden', '');
+}
+
+function validateFile(file) {
+  removeAvatarErrorEmptyState();
+
+  if (file?.size >= 500 * 1000) {
+    avatarInputEl.setAttribute('aria-invalid', 'true');
+    avatarHintEl.setAttribute('hidden', '');
+    avatarErrorMaxSizeEl.removeAttribute('hidden');
+    return false;
+  }
+
+  avatarInputEl.setAttribute('aria-invalid', 'false');
+  avatarHintEl.removeAttribute('hidden');
+  avatarErrorMaxSizeEl.setAttribute('hidden', '');
+  removeAvatarErrorEmptyState();
+  return true;
+}
+
 function validateInputs(values) {
   let results = {};
 
   for (const [key, value] of Object.entries(values)) {
     if (key === 'avatar') {
-      if (!values[key]?.trim()) {
-        avatarInputEl.setAttribute('area-invalid', 'true');
-        avatarHintEl.setAttribute('hidden', '');
-        avatarErrorEl.removeAttribute('hidden');
+      if (!values[key]?.objectURL?.trim()) {
+        showAvatarErrorEmptyState();
         results[key] = false;
       } else {
-        avatarInputEl.setAttribute('area-invalid', 'false');
-        avatarErrorEl.setAttribute('hidden', '');
-        avatarHintEl.removeAttribute('hidden');
+        removeAvatarErrorEmptyState();
         results[key] = true;
       }
     } else if (key === 'fullName') {
@@ -189,7 +218,26 @@ function validateInputs(values) {
   return !Object.values(results).includes(false);
 }
 
-// avatarInputEl.addEventListener('change', handleAvatarChange);
+avatarUploadWrapperEl.addEventListener('dragover', (e) => {
+  e.preventDefault();
+});
+
+avatarUploadWrapperEl.addEventListener('drop', (e) => {
+  e.preventDefault();
+
+  const droppedFiles = e.dataTransfer.files;
+
+  if (droppedFiles.length === 0) return false;
+
+  const file = droppedFiles[0];
+
+  if (!['image/jpeg', 'image/png'].includes(file.type)) return;
+
+  const dataTransferContainer = new DataTransfer();
+  dataTransferContainer.items.add(file);
+  avatarInputEl.files = dataTransferContainer.files;
+  avatarInputEl.dispatchEvent(new Event('change'));
+});
 
 changeImageButton.addEventListener('click', handleChangeImageButtonClick);
 
@@ -204,10 +252,13 @@ document.querySelectorAll('[data-bind]').forEach((element) => {
         const file = e.target?.files?.[0];
 
         if (!!file) {
-          URL.revokeObjectURL(appState.avatar);
-          appState[key] = '';
+          URL.revokeObjectURL(appState.avatar?.objectURL);
+          appState[key] = null;
           const objectURL = URL.createObjectURL(file);
-          appState[key] = objectURL;
+          appState[key] = {
+            fileRaw: file,
+            objectURL: objectURL,
+          };
           avatarPreviewEl.src = objectURL;
           avatarPreviewEl.style.padding = '0px';
           showFileFilledState();
@@ -222,14 +273,17 @@ document.querySelectorAll('[data-bind]').forEach((element) => {
 generateButtonEl.addEventListener('click', (e) => {
   e.preventDefault();
 
-  if (!validateInputs(JSON.parse(JSON.stringify(appState)))) {
+  if (
+    !validateFile(appState.avatar?.fileRaw) ||
+    !validateInputs(JSON.parse(JSON.stringify(appState)))
+  ) {
     return;
   }
 
   fillTicketContainerEl.setAttribute('hidden', '');
   generatedTicketContainerEl.removeAttribute('hidden');
 
-  resultAvatarEl.src = appState.avatar;
+  resultAvatarEl.src = appState.avatar?.objectURL;
   resultUserFullNameHeadingEl.textContent = appState.fullName + '!';
   resultUserFullNameEl.textContent = appState.fullName;
   resultEmailEl.textContent = appState.email;

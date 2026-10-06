@@ -17,10 +17,12 @@
   </head>
   <body>
     <main>
-      <img
-        class="logo-full"
-        src="./assets/images/logo-full.svg"
-        alt="Coding Conf Logo" />
+      <a href="/" class="logo-full-link">
+        <img
+          class="logo-full"
+          src="./assets/images/logo-full.svg"
+          alt="Coding Conf Logo" />
+      </a>
 
       <div id="fill-ticket-container" class="main-content-container">
         <h1 class="introdury-heading">
@@ -35,7 +37,7 @@
           <div class="form-field">
             <label for="file-upload"> Upload Avatar </label>
 
-            <div class="file-upload-wrapper">
+            <div id="file-upload-wrapper" class="file-upload-wrapper">
               <!-- Hidden native input -->
               <input
                 id="file-upload"
@@ -79,10 +81,25 @@
               Upload your photo (JPG or PNG, max size: 500KB).
             </span>
 
-            <span id="avatar-error" class="error-caption-wrapper" hidden>
-              <span class="error-caption-icon" aria-hidden="true"></span>
-              <span class="error-caption-text">
-                File too large. Please upload a photo under 500KB.
+            <span id="avatar-error">
+              <span
+                id="avatar-error-empty"
+                class="error-caption-wrapper"
+                hidden>
+                <span class="error-caption-icon" aria-hidden="true"></span>
+                <span class="error-caption-text">
+                  This field can not be empty.
+                </span>
+              </span>
+
+              <span
+                id="avatar-error-max-size"
+                class="error-caption-wrapper"
+                hidden>
+                <span class="error-caption-icon" aria-hidden="true"></span>
+                <span class="error-caption-text">
+                  File too large. Please upload a photo under 500KB.
+                </span>
               </span>
             </span>
           </div>
